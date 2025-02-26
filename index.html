@@ -1,0 +1,153 @@
+Monetag admin:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>md Tarek Islam</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+        }
+        .container div {
+            margin-bottom: 15px;
+        }
+        .container button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            width: 100%;
+        }
+        .container button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>md Tarek Islam</h1>
+        <div><strong>User ID:</strong> <span id="userId">123456</span></div>
+        <div><strong>Balance:</strong> BDT <span id="balance">0</span></div>
+        <div><strong>Today's Tasks:</strong> 3</div>
+        <div><strong>Completed Tasks:</strong> <span id="completedTasks">0</span></div>
+        <div><strong>Total Earnings:</strong> BDT <span id="totalEarnings">0.00</span></div>
+        <div><strong>Total Ads Watched:</strong> <span id="adsWatched">0</span></div>
+
+        <a href="https://example.com/beg-router" target="_blank"><button onclick="watchAd()">Watch Ad</button></a>
+        <a href="https://www.youtube.com" target="_blank"><button>YouTube Channel</button></a>
+        <a href="https://t.me/yourtelegramgroup" target="_blank"><button>Telegram Group</button></a>
+
+        <button onclick="toggleWithdraw()">Withdraw</button>
+        <div id="withdrawSection" class="hidden">
+            <p>Withdraw Amount: <input type="number" id="withdrawAmount" min="5" placeholder="Min 5 BDT"></p>
+            <p>Enter bKash Number: <input type="text" id="bkashNumber" placeholder="bKash Number"></p>
+            <button onclick="submitWithdraw()">Confirm Withdraw</button>
+        </div>
+
+        <button onclick="toggleRefer()">Refer</button>
+        <div id="referSection" class="hidden">
+            <p>Share Your Referral Link:</p>
+            <input type="text" value="https://t.me/yourbot?start=123456" id="refLink" readonly>
+            <button onclick="copyReferLink()">Copy Link</button>
+        </div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Monetag Ads Script -->
+    <script src="https://my.rtmark.net/p.js?f=sync&lr=1&partner=e145e32d7e7bf461f70ba16d429877badecb7f0afb0474d62634334861666da2" defer></script>
+    <noscript>
+        <img src="https://my.rtmark.net/img.gif?f=sync&lr=1&partner=e145e32d7e7bf461f70ba16d429877badecb7f0afb0474d62634334861666da2" width="1" height="1" />
+    </noscript>
+
+    <script>
+        function toggleWithdraw() {
+            document.getElementById('withdrawSection').classList.toggle('hidden');
+        }
+
+        function toggleRefer() {
+            document.getElementById('referSection').classList.toggle('hidden');
+        }
+
+        function copyReferLink() {
+            const refLink = document.getElementById('refLink');
+            refLink.select();
+            document.execCommand("copy");
+            alert("Referral link copied!");
+        }
+
+function watchAd() {
+            let adsWatched = parseInt(document.getElementById('adsWatched').textContent);
+            let balance = parseInt(document.getElementById('balance').textContent);
+            adsWatched++;
+            balance += 2; // প্রতি এড দেখলে 2 BDT ইনকাম
+
+            document.getElementById('adsWatched').textContent = adsWatched;
+            document.getElementById('balance').textContent = balance;
+            document.getElementById('totalEarnings').textContent = balance.toFixed(2);
+            alert("Ad Watched! You earned 2 BDT.");
+        }
+
+        function submitWithdraw() {
+            let withdrawAmount = parseInt(document.getElementById('withdrawAmount').value);
+            let bkashNumber = document.getElementById('bkashNumber').value;
+            let balance = parseInt(document.getElementById('balance').textContent);
+
+            if (withdrawAmount < 5) {
+                alert("Minimum Withdraw Amount is 5 BDT.");
+                return;
+            }
+            if (withdrawAmount > balance) {
+                alert("Insufficient Balance.");
+                return;
+            }
+            if (bkashNumber.length !== 11) {
+                alert("Enter a valid 11-digit bKash number.");
+                return;
+            }
+
+            // Balance Update
+            balance -= withdrawAmount;
+            document.getElementById('balance').textContent = balance;
+            document.getElementById('totalEarnings').textContent = balance.toFixed(2);
+            alert("Withdraw Request Sent Successfully!");
+
+            // এখানে API দিয়ে উইথড্র রিকোয়েস্ট সার্ভারে পাঠানো যাবে।
+        }
+
+        // Ensure music plays automatically
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('backgroundMusic');
+            audio.play();
+        });
+    </script>
+</body>
+</html>
