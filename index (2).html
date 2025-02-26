@@ -1,207 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ad Reward & Referral System</title>
-    <!-- Monetag Ad Script -->
-    <script src='//whephiwums.com/sdk.js' data-zone='8982453' data-sdk='show_8982453'></script>
+    <title>Watch Ads & Earn Money</title>
+    <script src="//whephiwums.com/sdk.js" data-zone="8982453" data-sdk="show_8982453"></script>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #222;
-            color: white;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
         }
         .container {
-            text-align: center;
-            background: #333;
+            margin-top: 50px;
+            background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            width: 300px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
         }
-        .progress-circle {
-            width: 80px;
-            height: 80px;
-            border: 4px solid green;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px auto;
-        }
+        h1 { color: #333; }
+        p { font-size: 16px; color: #555; }
         button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 12px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
+            background-color: #28a745;
             color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 5px;
+            margin: 10px;
+            width: 100%;
         }
-        button:hover {
-            transform: scale(1.05);
-        }
-        #watchAd {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-        }
-        #withdraw {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-        }
-        .direct-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ff4757);
-        }
-        .community-btn {
-            background: linear-gradient(135deg, #ff9aad, #ff6b6b);
-        }
-        .youtube-btn {
-            background: linear-gradient(135deg, #ff4757, #ff6b6b);
-        }
-        .referral button {
-            background: linear-gradient(135deg, #4ecdc4, #2c98f0);
+        button:hover { background-color: #218838; }
+        .watch-ads-btn { background-color: #007bff; }
+        .watch-ads-btn:hover { background-color: #0056b3; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Earn from Ads & Referrals</h2>
-        <p>Watch ads & refer friends to earn money!</p>
-        
-        <div class="progress-circle">
-            <span id="balance">0</span> Taka
-        </div>
-
-        <button id="watchAd">Watch Ad</button>
-        <button id="withdraw" disabled>Withdraw</button>
-
-        <!-- Additional Buttons -->
-        <button class="direct-btn" onclick="window.open('https://nanoushaks.net/4/8925658/direct', '_blank')">Direct</button>
-        <button class="community-btn" onclick="window.open('https://t.me/tarekczrf', '_blank')">Community</button>
-        <button class="youtube-btn" onclick="window.open('https://youtube.com/@itb-24s?si=NvBiNlt46mV6teHC', '_blank')">YouTube</button>
-
-        <div class="referral">
-            <p>Invite & Earn 0.1 Taka per referral!</p>
-            <input type="text" id="referralLink" readonly>
-            <button onclick="copyReferral()">Copy Link</button>
-        </div>
-        <div class="daily-task">
-            <p id="taskCounter">Daily Tasks Completed: 0/20</p>
-        </div>
-    </div>
-
     <script>
-        let balance = parseFloat(localStorage.getItem("userBalance")) || 0;
-        let userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
-        let dailyTasksCompleted = parseInt(localStorage.getItem("dailyTasksCompleted")) || 0;
-        const MAX_DAILY_TASKS = 20;
+        let balance = 0;  
+        let adsWatchedToday = localStorage.getItem("adsWatched") ? parseInt(localStorage.getItem("adsWatched")) : 0; 
+        const maxAdsPerDay = 20;  
 
-        localStorage.setItem("userId", userId);
-
-        const TELEGRAM_BOT_TOKEN = "8027805011:AAHNnRgy-ir09oHN3uSsWYSLS7NyO6ZyJhU";
-        const TELEGRAM_CHAT_ID = "@Monetagadminbot";
-
-        document.getElementById("referralLink").value = `https://t.me/Monetagadminbot?start=${userId}`;
-
-        function updateTaskCounter() {
-            document.getElementById("taskCounter").innerText = `Daily Tasks Completed: ${dailyTasksCompleted}/${MAX_DAILY_TASKS}`;
-        }
-
-        function copyReferral() {
-            let copyText = document.getElementById("referralLink").value;
-            navigator.clipboard.writeText(copyText).then(() => {
-                alert("Referral link copied!");
-            }).catch(err => {
-                alert("Failed to copy referral link.");
-            });
-        }
-
-        function updateBalance(amount) {
-            balance += amount;
-            localStorage.setItem("userBalance", balance);
-            document.getElementById("balance").innerText = balance;
-            checkWithdraw();
-        }
-
-        function checkWithdraw() {
-            document.getElementById("withdraw").disabled = balance < 100;
-        }
-
-        document.getElementById("watchAd").addEventListener("click", function() {
-            if (dailyTasksCompleted >= MAX_DAILY_TASKS) {
-                alert("You have reached the daily task limit (20 tasks). Try again tomorrow!");
+        function watchAds() {
+            if (adsWatchedToday >= maxAdsPerDay) {
+                alert("আপনি আজকের অ্যাড দেখার সীমা পার করেছেন!");
                 return;
             }
 
-            if (typeof show_8982453 === "function") {
-                show_8982453().then(() => {
-                    updateBalance(0.2);
-                    dailyTasksCompleted++;
-                    localStorage.setItem("dailyTasksCompleted", dailyTasksCompleted);
-                    updateTaskCounter();
-                    alert("Ad viewed! You earned 0.2 Taka.");
-                }).catch(err => {
-                    alert("Ad failed to load.");
-                });
+            if (typeof show_8982453 !== "undefined") {
+                show_8982453(); // Monetag Ad Trigger
+                setTimeout(() => {
+                    balance += 0.2; 
+                    adsWatchedToday++;  
+                    localStorage.setItem("adsWatched", adsWatchedToday); 
+                    document.getElementById('balance').innerText = balance.toFixed(2);
+                    document.getElementById('adsLeft').innerText = maxAdsPerDay - adsWatchedToday;
+                    alert(`অ্যাড দেখার জন্য 0.2 BDT আপনার অ্যাকাউন্টে যোগ হয়েছে! \nআজ আপনার বাকি অ্যাড দেখার সুযোগ: ${maxAdsPerDay - adsWatchedToday}`);
+                }, 15000); // 15 সেকেন্ড পর অ্যাড দেখানো হবে
             } else {
-                alert("Ad is not ready yet.");
+                alert("অ্যাড সিস্টেমটি বর্তমানে কাজ করছে না, দয়া করে পরে চেষ্টা করুন!");
             }
-        });
-
-        document.getElementById("withdraw").addEventListener("click", function() {
-            if (balance >= 100) {
-                let bkashNumber = prompt("Enter your bKash number:");
-                if (bkashNumber) {
-                    let message = `Withdraw Request!\nUser ID: ${userId}\nAmount: ${balance} Taka\nbKash: ${bkashNumber}`;
-                    let telegramURL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(message)}`;
-
-                    fetch(telegramURL)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.ok) {
-                            alert("Withdraw request sent! Admin will review.");
-                            balance = 0;
-                            localStorage.setItem("userBalance", balance);
-                            document.getElementById("balance").innerText = balance;
-                            checkWithdraw();
-                        } else {
-                            alert("Failed to send withdraw request.");
-                        }
-                    })
-                    .catch(error => {
-                        alert("Error sending withdraw request.");
-                    });
-                } else {
-                    alert("bKash number is required!");
-                }
-            } else {
-                alert("You need at least 100 Taka to withdraw.");
-            }
-        });
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const referrer = urlParams.get("start");
-
-        if (referrer && !localStorage.getItem("referred")) {
-            updateBalance(0.1);
-            localStorage.setItem("referred", "true");
-            alert("আপনি রেফারেল লিংক ব্যবহার করে জয়েন করেছেন! আপনি 0.1 টাকা পেয়েছেন।");
         }
 
-        checkWithdraw();
-        updateTaskCounter();
+        function resetAdsCounter() {
+            let lastReset = localStorage.getItem("lastReset");
+            let today = new Date().toDateString();
+
+            if (lastReset !== today) {
+                localStorage.setItem("adsWatched", 0);
+                localStorage.setItem("lastReset", today);
+                adsWatchedToday = 0;
+            }
+        }
+
+        resetAdsCounter();
+
+        function validateWithdraw() {
+            let withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
+            let bKashNumber = document.getElementById('bKashNumber').value;
+
+            if (withdrawAmount < 100) {
+                alert("মিনিমাম উইথড্র ১০০ BDT হতে হবে!");
+                return false;
+            }
+            if (withdrawAmount > balance) {
+                alert("আপনার ব্যালেন্সের চেয়ে বেশি পরিমাণ উইথড্র করা যাবে না!");
+                return false;
+            }
+            if (!bKashNumber || bKashNumber.length !== 11) {
+                alert("বিকাশ নম্বরটি সঠিক নয় (১১ ডিজিট)!");
+                return false;
+            }
+
+            sendWithdrawRequest(withdrawAmount, bKashNumber);
+            return true;
+        }
+
+        function sendWithdrawRequest(amount, bKashNumber) {
+            alert(`উইথড্রয়ের জন্য সফলভাবে আবেদন পাঠানো হয়েছে! \nপরিমাণ: ${amount} BDT, বিকাশ নম্বর: ${bKashNumber}`);
+        }
     </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Watch Ads & Earn Money</h1>
+        <p>🔹 প্রতি অ্যাড দেখলে 0.2 BDT আপনার অ্যাকাউন্টে যোগ হবে!</p>
+        <p>🔹 দৈনিক ২০টি অ্যাড দেখার সুযোগ</p>
+        <p>🔹 মিনিমাম উইথড্র: ১০০ BDT</p>
+        <p>আজ আপনার বাকি অ্যাড দেখার সুযোগ: <span id="adsLeft">20</span></p>
+        <button class="watch-ads-btn" onclick="watchAds()">Watch Ads & Earn</button>
+
+        <h3>💰 Withdraw Request</h3>
+        <p>বর্তমান ব্যালেন্স: <span id="balance">0.00</span> BDT</p>
+        <input type="number" id="withdrawAmount" placeholder="উইথড্র পরিমাণ (min 100 BDT)" />
+        <input type="text" id="bKashNumber" placeholder="বিকাশ নম্বর (11 ডিজিট)" />
+        <br />
+        <button onclick="return validateWithdraw()">Withdraw</button>
+
+        <h3>📢 Join Our Community</h3>
+        <div>
+            <a href="https://t.me/freeincomTipsBangla" style="display:block; margin:10px 0; padding:10px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">📢 Join Telegram Channel</a>
+            <a href="https://t.me/tarekczrf" style="display:block; margin:10px 0; padding:10px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">👥 Join Telegram Group</a>
+            <a href="https://youtube.com/@itb-24s?si=NvBiNlt46mV6teHC" style="display:block; margin:10px 0; padding:10px; background:#ff0000; color:white; text-decoration:none; border-radius:5px;">📺 Subscribe on YouTube</a>
+        </div>
+    </div>
 </body>
-</html>
+    </html>
